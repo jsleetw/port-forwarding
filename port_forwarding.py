@@ -2,6 +2,7 @@ import socket
 import sys
 import thread
 
+
 def main(setup, error):
     sys.stderr = file(error, 'a')
     for settings in parse(setup):
@@ -10,12 +11,14 @@ def main(setup, error):
     lock.acquire()
     lock.acquire()
 
+
 def parse(setup):
     settings = list()
     for line in file(setup):
         parts = line.split()
         settings.append((parts[0], int(parts[1]), int(parts[2])))
     return settings
+
 
 def server(*settings):
     try:
@@ -24,14 +27,14 @@ def server(*settings):
         dock_socket.listen(5)
         while True:
             client_socket, address = dock_socket.accept()
-            print address
-            print client_socket.getsockname()
+            print "clinet %s -> from port:%s -> to:%s:%s" % (str(address).strip(), settings[2], settings[0], settings[1])
             server_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
             server_socket.connect((settings[0], settings[1]))
             thread.start_new_thread(forward, (client_socket, server_socket))
             thread.start_new_thread(forward, (server_socket, client_socket))
     finally:
         thread.start_new_thread(server, settings)
+
 
 def forward(source, destination):
     string = ' '
