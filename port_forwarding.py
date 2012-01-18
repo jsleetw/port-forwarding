@@ -6,7 +6,7 @@ import thread
 class port_forwarding:
     """a class using in port_forwarding"""
     def __init__(self, setup, error):
-        sys.stderr = file(error, 'a')
+        #sys.stderr = file(error, 'a')
         for settings in self.parse(setup):
             thread.start_new_thread(self.server, settings)
         lock = thread.allocate_lock()
@@ -42,8 +42,8 @@ class port_forwarding:
             if string:
                 destination.sendall(string)
             else:
-                source.shutdown(socket.SHUT_RD)
-                destination.shutdown(socket.SHUT_WR)
+                source.shutdown(socket.SHUT_RDWR)
+                destination.shutdown(socket.SHUT_RDWR)
 
 if __name__ == '__main__':
     demon = port_forwarding('proxy.ini', 'error.log')
