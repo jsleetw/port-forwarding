@@ -4,7 +4,7 @@ import thread
 
 
 class port_forwarding:
-    """a class using in port_forwarding"""
+    """using in port_forwarding"""
     def __init__(self, setup, error):
         #sys.stderr = file(error, 'a')
         for settings in self.parse(setup):
