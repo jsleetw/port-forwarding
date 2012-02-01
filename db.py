@@ -9,29 +9,38 @@ class db():
             print 'No action specified.'
             sys.exit()
 
-        print argv[1]
         action = argv[1]
         con = sqlite3.connect("./test.db")
         con.isolation_level = None  # for autocommit mode
         self.cur = con.cursor()
-        getattr(self, action)()
+        try:
+            getattr(self, action)()
+        except sqlite3.OperationalError, e:
+            print "E:" + str(e)
+            self.create()
+            getattr(self, action)()
 
     def insert(self):
-        self.cur.execute("insert into test(i) values (1)")
+        #insert ip port listen-port
+        if len(sys.argv) < 5:
+            print 'Not enough argument.'
+            sys.exit()
+
+        ip = sys.argv[2]
+        port = sys.argv[3]
+        listen_port = sys.argv[4]
+        self.cur.execute("insert into test(ip, port, listen_port) values (:ip,\
+                          :port, :listen_port)",
+                          {"ip": ip, "port": port, "listen_port": listen_port})
         self.cur.execute("select * from test")
         print self.cur.fetchall()
 
     def select(self):
-        try:
-            self.cur.execute("select * from test")
-            print self.cur.fetchall()
-        except sqlite3.OperationalError, e:
-            print "E:" + str(e)
-            self.create()
-            self.select()
+        self.cur.execute("select * from test")
+        print self.cur.fetchall()
 
     def create(self):
-        self.cur.execute("create table test(i)")
+        self.cur.execute("create table test(ip, port, listen_port)")
 
 if __name__ == '__main__':
     init = db(sys.argv)
