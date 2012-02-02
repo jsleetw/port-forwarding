@@ -20,6 +20,9 @@ class db():
             self.create()
             getattr(self, action)()
 
+    def drop(self):
+        self.cur.execute("drop table test")
+
     def insert(self):
         #insert ip port listen-port
         if len(sys.argv) < 5:
@@ -32,8 +35,7 @@ class db():
         self.cur.execute("insert into test(ip, port, listen_port) values (:ip,\
                           :port, :listen_port)",
                           {"ip": ip, "port": port, "listen_port": listen_port})
-        self.cur.execute("select * from test")
-        print self.cur.fetchall()
+        self.select()
 
     def select(self):
         self.cur.execute("select * from test")
