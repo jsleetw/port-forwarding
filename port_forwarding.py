@@ -1,17 +1,24 @@
 import socket
-import sys
+import sqlite3
 import thread
+import sys
 
 
 class port_forwarding:
     """using in port_forwarding"""
     def __init__(self, setup, error):
-        #sys.stderr = file(error, 'a')
-        for settings in self.parse(setup):
+        for settings in self.fetch_db():
             thread.start_new_thread(self.server, settings)
         lock = thread.allocate_lock()
         lock.acquire()
         lock.acquire()
+
+    def fetch_db(self):
+        con = sqlite3.connect("./test.db")
+        cur = con.cursor()
+        cur.execute("select ip, port, listen_port from test")
+        data = cur.fetchall()
+        return data
 
     def parse(self, setup):
         settings = list()
@@ -22,14 +29,18 @@ class port_forwarding:
 
     def server(self, *settings):
         try:
+            ip = str(settings[0])
+            port = int(settings[1])
+            listen_port = int(settings[2])
             dock_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-            dock_socket.bind(('', settings[2]))
+            dock_socket.bind(('', listen_port))
             dock_socket.listen(5)
             while True:
                 client_socket, address = dock_socket.accept()
-                print "clinet %s -> from port:%s -> to:%s:%s" % (str(address).strip(), settings[2], settings[0], settings[1])
+                print "clinet %s -> from port:%s -> to:%s:%s" % \
+                (str(address).strip(), listen_port, ip, port)
                 server_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-                server_socket.connect((settings[0], settings[1]))
+                server_socket.connect((ip, port))
                 thread.start_new_thread(self.forward, (client_socket, server_socket))
                 thread.start_new_thread(self.forward, (server_socket, client_socket))
         finally:

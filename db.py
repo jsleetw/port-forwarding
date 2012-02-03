@@ -38,8 +38,11 @@ class db():
         self.select()
 
     def select(self):
-        self.cur.execute("select * from test")
-        print self.cur.fetchall()
+        self.cur.execute("select ip, port, listen_port from test")
+        data = self.cur.fetchall()
+        print len(data)
+        for i in data:
+            print i[0]
 
     def create(self):
         self.cur.execute("create table test(ip, port, listen_port)")
