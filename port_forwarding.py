@@ -1,7 +1,6 @@
 import socket
 import sqlite3
 import thread
-import sys
 
 
 class port_forwarding:
@@ -53,8 +52,12 @@ class port_forwarding:
             if string:
                 destination.sendall(string)
             else:
-                source.shutdown(socket.SHUT_RDWR)
-                destination.shutdown(socket.SHUT_RDWR)
+                try:
+                    source.shutdown(socket.SHUT_RDWR)
+                    destination.shutdown(socket.SHUT_RDWR)
+                except socket.error, e:
+                    print "E:" + str(e)
+
 
 if __name__ == '__main__':
     demon = port_forwarding('proxy.ini', 'error.log')
