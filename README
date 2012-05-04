@@ -1,1 +1,15 @@
 implement port-forwarding demon in python
+
+How to Use:
+
+1. create table
+python db.py create
+2. insert data for port forwarding
+for example:
+python db.py insert 0.0.0.0 22 2222 
+your 2222 port to your 22
+python db.py insert 74.125.31.104 80 80
+your 80 port to google
+3. start deamon
+python port_forwarding.py
+ 
